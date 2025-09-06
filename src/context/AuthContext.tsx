@@ -1,6 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AuthService } from '@/services/authService';
-import { User, AuthContextType } from '@/types';
+import apiService, { User } from '@/services/apiService';
+
+interface AuthContextType {
+  user: User | null;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
+  register: (username: string, email: string, password: string, full_name?: string) => Promise<{ success: boolean; message?: string }>;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+  updateProfile: (updates: Partial<User>) => Promise<{ success: boolean; message?: string }>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -18,44 +27,60 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkAuthState = async () => {
     try {
-      const currentUser = await AuthService.getCurrentUser();
-      setUser(currentUser);
+      // First check if we have stored user data
+      const storedUser = await apiService.getStoredUser();
+      const storedToken = await apiService.getStoredToken();
+      
+      if (storedUser && storedToken) {
+        // Verify token is still valid
+        const verifyResult = await apiService.verifyToken();
+        if (verifyResult.success && verifyResult.data?.user) {
+          setUser(verifyResult.data.user);
+        } else {
+          // Token invalid, clear storage
+          await apiService.logout();
+        }
+      }
     } catch (error) {
       console.error('Error checking auth state:', error);
+      await apiService.logout();
     } finally {
       setIsLoading(false);
     }
   };
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
     setIsLoading(true);
     try {
-      const result = await AuthService.login(email, password);
-      if (result.success && result.user) {
-        setUser(result.user);
-        return true;
+      const result = await apiService.login(email, password);
+      if (result.success && result.data?.user) {
+        setUser(result.data.user);
       }
-      return false;
+      return { success: result.success, message: result.message };
     } catch (error) {
       console.error('Login error:', error);
-      return false;
+      return { success: false, message: 'Login failed. Please try again.' };
     } finally {
       setIsLoading(false);
     }
   };
 
-  const register = async (email: string, password: string, username: string): Promise<boolean> => {
+  const register = async (
+    username: string, 
+    email: string, 
+    password: string, 
+    full_name?: string
+  ): Promise<{ success: boolean; message?: string }> => {
     setIsLoading(true);
     try {
-      const result = await AuthService.register(email, password, username);
-      if (result.success && result.user) {
-        setUser(result.user);
-        return true;
+      const result = await apiService.register({ username, email, password, full_name });
+      if (result.success && result.data?.user) {
+        setUser(result.data.user);
       }
-      return false;
+      return { success: result.success, message: result.message };
     } catch (error) {
       console.error('Register error:', error);
-      return false;
+      return { success: false, message: 'Registration failed. Please try again.' };
     } finally {
       setIsLoading(false);
     }
@@ -63,26 +88,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async (): Promise<void> => {
     try {
-      await AuthService.logout();
-      setUser(null);
+      await apiService.logout();
     } catch (error) {
       console.error('Logout error:', error);
+    } finally {
+      setUser(null);
     }
   };
 
-  const updateProfile = async (updates: Partial<User>): Promise<boolean> => {
-    if (!user) return false;
-
+  const refreshUser = async (): Promise<void> => {
     try {
-      const result = await AuthService.updateProfile(user.id, updates);
-      if (result.success && result.user) {
-        setUser(result.user);
-        return true;
+      const result = await apiService.getProfile();
+      if (result.success && result.data?.user) {
+        setUser(result.data.user);
       }
-      return false;
+    } catch (error) {
+      console.error('Refresh user error:', error);
+    }
+  };
+
+  const updateProfile = async (updates: any): Promise<{ success: boolean; message?: string }> => {
+    try {
+      const result = await apiService.updateProfile(updates);
+      if (result.success && result.data?.user) {
+        setUser(result.data.user);
+      }
+      return { success: result.success, message: result.message };
     } catch (error) {
       console.error('Update profile error:', error);
-      return false;
+      return { success: false, message: 'Failed to update profile. Please try again.' };
     }
   };
 
@@ -92,6 +126,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     register,
     logout,
+    refreshUser,
     updateProfile,
   };
 

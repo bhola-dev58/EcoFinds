@@ -1,7 +1,21 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ProductService } from '@/services/productService';
-import { Product, ProductCategory, CartItem, Purchase, AppContextType } from '@/types';
+import apiService, { Product, CartItem } from '@/services/apiService';
 import { useAuth } from './AuthContext';
+
+interface AppContextType {
+  products: Product[];
+  cart: CartItem[];
+  isLoading: boolean;
+  addToCart: (product: Product) => Promise<{ success: boolean; message?: string }>;
+  removeFromCart: (cartItemId: number) => Promise<{ success: boolean; message?: string }>;
+  clearCart: () => Promise<{ success: boolean; message?: string }>;
+  refreshProducts: () => Promise<void>;
+  refreshCart: () => Promise<void>;
+  searchProducts: (query: string, category?: string) => Promise<Product[]>;
+  createProduct: (productData: FormData) => Promise<{ success: boolean; message?: string }>;
+  updateProduct: (id: number, productData: FormData) => Promise<{ success: boolean; message?: string }>;
+  deleteProduct: (id: number) => Promise<{ success: boolean; message?: string }>;
+}
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -12,208 +26,173 @@ interface AppProviderProps {
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { user } = useAuth();
 
   useEffect(() => {
     loadInitialData();
   }, []);
 
-  const loadInitialData = async () => {
-    try {
-      const [allProducts, cartItems, userPurchases] = await Promise.all([
-        ProductService.getAllProducts(),
-        ProductService.getCart(),
-        user ? ProductService.getPurchasesByUser(user.id) : Promise.resolve([]),
-      ]);
+  useEffect(() => {
+    // Refresh cart when user changes
+    if (user) {
+      refreshCart();
+    } else {
+      setCart([]);
+    }
+  }, [user]);
 
-      setProducts(allProducts);
-      setCart(cartItems);
-      setPurchases(userPurchases);
+  const loadInitialData = async () => {
+    setIsLoading(true);
+    try {
+      await refreshProducts();
     } catch (error) {
       console.error('Failed to load initial data:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const refreshProducts = async () => {
     try {
-      const allProducts = await ProductService.getAllProducts();
-      setProducts(allProducts);
+      const response = await apiService.getProducts({ limit: 100 });
+      if (response.success && response.data?.products) {
+        setProducts(response.data.products);
+      }
     } catch (error) {
       console.error('Failed to refresh products:', error);
     }
   };
 
   const refreshCart = async () => {
+    if (!user) {
+      setCart([]);
+      return;
+    }
+
     try {
-      const cartItems = await ProductService.getCart();
-      setCart(cartItems);
+      const response = await apiService.getCart();
+      if (response.success && response.data?.cart) {
+        setCart(response.data.cart);
+      }
     } catch (error) {
       console.error('Failed to refresh cart:', error);
     }
   };
 
-  const refreshPurchases = async () => {
-    if (!user) return;
-    
+  const searchProducts = async (query: string, category?: string): Promise<Product[]> => {
     try {
-      const userPurchases = await ProductService.getPurchasesByUser(user.id);
-      setPurchases(userPurchases);
+      const params: any = { limit: 100 };
+      if (query) params.search = query;
+      if (category) params.category = category;
+
+      const response = await apiService.getProducts(params);
+      if (response.success && response.data?.products) {
+        return response.data.products;
+      }
+      return [];
     } catch (error) {
-      console.error('Failed to refresh purchases:', error);
+      console.error('Search products error:', error);
+      return [];
     }
   };
 
-  const addToCart = async (product: Product): Promise<void> => {
+  const addToCart = async (product: Product): Promise<{ success: boolean; message?: string }> => {
+    if (!user) {
+      return { success: false, message: 'Please log in to add items to cart' };
+    }
+
     try {
-      const result = await ProductService.addToCart(product);
-      if (result.success) {
+      const response = await apiService.addToCart(product.id);
+      if (response.success) {
         await refreshCart();
-      } else {
-        throw new Error(result.message);
       }
+      return { success: response.success, message: response.message };
     } catch (error) {
       console.error('Add to cart error:', error);
-      throw error;
+      return { success: false, message: 'Failed to add item to cart' };
     }
   };
 
-  const removeFromCart = async (productId: string): Promise<void> => {
+  const removeFromCart = async (cartItemId: number): Promise<{ success: boolean; message?: string }> => {
     try {
-      const result = await ProductService.removeFromCart(productId);
-      if (result.success) {
+      const response = await apiService.removeFromCart(cartItemId);
+      if (response.success) {
         await refreshCart();
-      } else {
-        throw new Error(result.message);
       }
+      return { success: response.success, message: response.message };
     } catch (error) {
       console.error('Remove from cart error:', error);
-      throw error;
+      return { success: false, message: 'Failed to remove item from cart' };
     }
   };
 
-  const updateCartQuantity = async (productId: string, quantity: number): Promise<void> => {
+  const clearCart = async (): Promise<{ success: boolean; message?: string }> => {
     try {
-      const result = await ProductService.updateCartQuantity(productId, quantity);
-      if (result.success) {
+      const response = await apiService.clearCart();
+      if (response.success) {
         await refreshCart();
-      } else {
-        throw new Error(result.message);
       }
-    } catch (error) {
-      console.error('Update cart quantity error:', error);
-      throw error;
-    }
-  };
-
-  const clearCart = async (): Promise<void> => {
-    try {
-      const result = await ProductService.clearCart();
-      if (result.success) {
-        await refreshCart();
-      } else {
-        throw new Error(result.message);
-      }
+      return { success: response.success, message: response.message };
     } catch (error) {
       console.error('Clear cart error:', error);
-      throw error;
+      return { success: false, message: 'Failed to clear cart' };
     }
   };
 
-  const createProduct = async (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<boolean> => {
+  const createProduct = async (productData: FormData): Promise<{ success: boolean; message?: string }> => {
     try {
-      const result = await ProductService.createProduct(product);
-      if (result.success) {
+      const response = await apiService.createProduct(productData);
+      if (response.success) {
         await refreshProducts();
-        return true;
       }
-      return false;
+      return { success: response.success, message: response.message };
     } catch (error) {
       console.error('Create product error:', error);
-      return false;
+      return { success: false, message: 'Failed to create product' };
     }
   };
 
-  const updateProduct = async (id: string, updates: Partial<Product>): Promise<boolean> => {
+  const updateProduct = async (id: number, productData: FormData): Promise<{ success: boolean; message?: string }> => {
     try {
-      const result = await ProductService.updateProduct(id, updates);
-      if (result.success) {
+      const response = await apiService.updateProduct(id, productData);
+      if (response.success) {
         await refreshProducts();
-        return true;
       }
-      return false;
+      return { success: response.success, message: response.message };
     } catch (error) {
       console.error('Update product error:', error);
-      return false;
+      return { success: false, message: 'Failed to update product' };
     }
   };
 
-  const deleteProduct = async (id: string): Promise<boolean> => {
+  const deleteProduct = async (id: number): Promise<{ success: boolean; message?: string }> => {
     try {
-      const result = await ProductService.deleteProduct(id);
-      if (result.success) {
+      const response = await apiService.deleteProduct(id);
+      if (response.success) {
         await refreshProducts();
-        return true;
+        await refreshCart(); // Remove from cart if it was there
       }
-      return false;
+      return { success: response.success, message: response.message };
     } catch (error) {
       console.error('Delete product error:', error);
-      return false;
-    }
-  };
-
-  const searchProducts = (query: string): Product[] => {
-    if (!query.trim()) {
-      return products.filter(product => product.isAvailable);
-    }
-
-    const lowercaseQuery = query.toLowerCase();
-    return products.filter(product => 
-      product.isAvailable && (
-        product.title.toLowerCase().includes(lowercaseQuery) ||
-        product.description.toLowerCase().includes(lowercaseQuery)
-      )
-    );
-  };
-
-  const filterByCategory = (category: ProductCategory | null): Product[] => {
-    if (!category) {
-      return products.filter(product => product.isAvailable);
-    }
-
-    return products.filter(product => product.isAvailable && product.category === category);
-  };
-
-  const purchaseProduct = async (productId: string): Promise<boolean> => {
-    if (!user) return false;
-
-    try {
-      const result = await ProductService.purchaseProduct(productId, user.id);
-      if (result.success) {
-        await Promise.all([refreshProducts(), refreshCart(), refreshPurchases()]);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Purchase product error:', error);
-      return false;
+      return { success: false, message: 'Failed to delete product' };
     }
   };
 
   const contextValue: AppContextType = {
     products,
     cart,
-    purchases,
+    isLoading,
     addToCart,
     removeFromCart,
-    updateCartQuantity,
     clearCart,
+    refreshProducts,
+    refreshCart,
+    searchProducts,
     createProduct,
     updateProduct,
     deleteProduct,
-    searchProducts,
-    filterByCategory,
-    purchaseProduct,
   };
 
   return (
