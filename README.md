@@ -89,8 +89,8 @@ src/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd EcoFinds/EcoFindsApp
+   git clone https://github.com/bhola-dev58/EcoFinds.git
+   cd EcoFinds
    ```
 
 2. **Install dependencies**
