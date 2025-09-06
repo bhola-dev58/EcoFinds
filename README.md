@@ -1,153 +1,98 @@
-# EcoFinds - Second-Hand Marketplace Mobile App
+# EcoFinds - Full-Stack Marketplace
 
-**Empowering Sustainable Consumption through a Second-Hand Marketplace**
+A complete second-hand marketplace built with React Native + Node.js + MySQL. Features real-time search, JWT authentication, file uploads, and modern UI/UX.
 
-## 🌟 Overview
+## 🚀 Quick Start
 
-EcoFinds is a React Native mobile application that serves as a vibrant and trusted platform for buying and selling pre-owned goods. Our mission is to foster a culture of sustainability by extending the lifecycle of products, reducing waste, and providing an accessible alternative to purchasing new items.
+```bash
+# 1. Clone and setup backend
+git clone https://github.com/bhola-dev58/EcoFinds.git
+cd EcoFinds/EcoFindsApp/backend
+npm install && npm run init-db && npm run dev
 
-## 🎯 Vision
-
-To become the go-to destination for a conscious community seeking unique finds and responsible consumption, revolutionizing the way people buy and sell pre-owned goods.
-
-## ✨ Features
-
-### User Authentication & Profile Management
-- ✅ User registration and login with email/password
-- ✅ Profile creation with username setup
-- ✅ Editable user dashboard
-- ✅ Secure data storage using AsyncStorage
-
-### Product Management (CRUD Operations)
-- ✅ Create new product listings with title, description, category, price
-- ✅ Edit and update existing product listings
-- ✅ Delete product listings
-- ✅ View all user's products with status tracking
-- ✅ Image placeholder support (ready for future image upload feature)
-
-### Product Discovery & Search
-- ✅ Browse all available products
-- ✅ Keyword search functionality in titles and descriptions
-- ✅ Category filtering with predefined categories
-- ✅ Product detail view with full information
-- ✅ Real-time search and filter updates
-
-### Shopping Cart & Purchase System
-- ✅ Add products to shopping cart
-- ✅ Manage cart quantities and remove items
-- ✅ Individual product purchase functionality
-- ✅ Clear entire cart option
-- ✅ Cart persistence across app sessions
-
-### Purchase History & Tracking
-- ✅ Complete purchase history with order details
-- ✅ Purchase status tracking (completed, pending, cancelled)
-- ✅ Total spending calculations
-- ✅ Order ID generation and tracking
-
-### Additional Features
-- ✅ Responsive design for both mobile and desktop interfaces
-- ✅ Home screen with quick actions and recent listings
-- ✅ Clean, modern UI with consistent design patterns
-- ✅ Offline data storage and synchronization
-- ✅ Error handling and user feedback
-
-## 📱 Technology Stack
-
-- **Frontend**: React Native with TypeScript
-- **Navigation**: React Navigation 6 (Stack & Bottom Tabs)
-- **State Management**: React Context API
-- **Data Storage**: AsyncStorage for local persistence
-- **UI Framework**: React Native built-in components
-- **Development Platform**: Expo
-
-## 🏗️ Architecture
-
-The app follows a modular architecture with clear separation of concerns:
-
-```
-src/
-├── components/          # Reusable UI components
-├── screens/            # Screen components
-├── navigation/         # Navigation configuration
-├── context/            # React Context providers
-├── services/           # Business logic and data services
-├── types/              # TypeScript type definitions
-└── utils/              # Utility functions
+# 2. Setup frontend (new terminal)
+cd .. && npm install && npm start
 ```
 
-## 🚀 Getting Started
+**Test Account**: `test@example.com` / `testuser123`
 
-### Prerequisites
+## 💻 Tech Stack
 
-- Node.js (v14 or higher)
-- npm or yarn
-- Expo CLI
-- iOS Simulator (for iOS development) or Android Emulator (for Android development)
+**Frontend**: React Native, TypeScript, Axios, AsyncStorage  
+**Backend**: Node.js, Express.js, JWT, Multer, bcrypt  
+**Database**: MySQL with connection pooling  
+**Security**: Input validation, SQL injection protection, CORS  
 
-### Installation
+## ✨ Key Features
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/bhola-dev58/EcoFinds.git
-   cd EcoFinds
-   ```
+- 🔐 **JWT Authentication** - Secure login/register with token refresh
+- 📋 **Product CRUD** - Create, edit, delete with image uploads
+- 🔍 **Real-time Search** - Live search with filters and counters
+- 🛒 **Shopping Cart** - Multi-user cart with database sync
+- 📱 **Modern UI** - Collapsible menu, responsive design, banner integration
+- 🔒 **Security** - Password hashing, input validation, protected routes
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server**
-   ```bash
-   npm start
-   ```
-
-4. **Run on your preferred platform**
-   - For iOS: `npm run ios`
-   - For Android: `npm run android`
-   - For Web: `npm run web`
-
-### Project Structure
+## 🏢 Project Structure
 
 ```
 EcoFindsApp/
-├── App.js                 # Main application component
-├── src/
-│   ├── components/        # Reusable components
-│   ├── screens/           # Application screens
-│   │   ├── LoginScreen.tsx
-│   │   ├── RegisterScreen.tsx
-│   │   ├── HomeScreen.tsx
-│   │   ├── BrowseScreen.tsx
-│   │   ├── AddProductScreen.tsx
-│   │   ├── CartScreen.tsx
-│   │   ├── ProfileScreen.tsx
-│   │   ├── EditProfileScreen.tsx
-│   │   ├── MyProductsScreen.tsx
-│   │   ├── PurchaseHistoryScreen.tsx
-│   │   └── ProductDetailScreen.tsx
+├── src/                    # Frontend (React Native)
+│   ├── components/
+│   ├── screens/
 │   ├── navigation/
-│   │   └── AppNavigator.tsx
-│   ├── context/
-│   │   ├── AuthContext.tsx
-│   │   └── AppContext.tsx
-│   ├── services/
-│   │   ├── authService.ts
-│   │   └── productService.ts
-│   └── types/
-│       └── index.ts
-├── package.json
-└── tsconfig.json
+│   ├── context/            # Auth & App state
+│   └── services/           # API integration
+└── backend/                # Backend (Node.js)
+    ├── routes/             # API endpoints
+    ├── middleware/         # Auth & validation
+    ├── config/             # DB connection
+    └── uploads/            # File storage
 ```
 
-## 📋 Available Scripts
+## 🚀 Prerequisites
 
-- `npm start` - Start the Expo development server
-- `npm run android` - Run on Android emulator/device
-- `npm run ios` - Run on iOS simulator/device
-- `npm run web` - Run in web browser
-- `npm run eject` - Eject from Expo (not recommended unless necessary)
+- **Node.js** (v14+)
+- **XAMPP** (for MySQL)
+- **Expo CLI** (`npm install -g @expo/cli`)
+
+## ⚙️ Environment Setup
+
+**Backend (.env):**
+```env
+DB_HOST=localhost
+DB_NAME=ecofinds
+JWT_SECRET=your-secret-key
+```
+
+**API Base URL** (frontend): Update in `src/services/apiService.ts`
+
+## 📜 API Reference
+
+**Base URL**: `http://localhost:3000/api`
+
+### Main Endpoints
+```
+POST /auth/login          # User authentication
+GET  /products            # List products (?search=&category=&page=)
+POST /products            # Create product (auth required)
+GET  /cart                # User cart (auth required)
+POST /cart/add            # Add to cart (auth required)
+GET  /categories          # Available categories
+```
+
+**Auth**: Add `Authorization: Bearer <jwt-token>` header for protected routes.
+
+## 💻 Development Commands
+
+```bash
+# Frontend
+npm start                 # Start Expo dev server
+npm run ios/android       # Run on device/emulator
+
+# Backend (in /backend)
+npm run dev               # Start with nodemon
+npm run init-db           # Initialize database
+```
 
 ## 🎨 UI/UX Design
 
@@ -158,66 +103,49 @@ The app features a clean, modern design with:
 - **Layout**: Card-based design with appropriate spacing
 - **Feedback**: Toast messages and alerts for user actions
 
-## 💾 Data Management
+## 🔧 Contributing
 
-The app uses a sophisticated local data management system:
+### Development Setup
+1. Fork the repo and create a feature branch
+2. Follow the Quick Start guide above
+3. Make changes with proper TypeScript types
+4. Test both frontend and backend functionality
+5. Submit PR with clear description
 
-- **AsyncStorage**: For persistent local data storage
-- **Context API**: For global state management
-- **Service Layer**: Abstracted data operations
-- **Type Safety**: Full TypeScript integration
+### Code Style
+- **TypeScript**: Strict typing throughout
+- **React**: Functional components with hooks
+- **API**: RESTful conventions
+- **Database**: Parameterized queries only
 
-### Data Models
+### Key Areas for Contribution
+- 🐛 **Bug fixes** - Check issues tab
+- ✨ **Features** - Image upload improvements, real-time messaging
+- 🔒 **Security** - Authentication improvements, rate limiting
+- 🎨 **UI/UX** - Mobile responsiveness, dark mode
+- 📝 **Docs** - API documentation, code comments
 
-- **User**: ID, email, username, creation/update timestamps
-- **Product**: ID, title, description, category, price, seller info, availability status
-- **CartItem**: Product reference with quantity and timestamps
-- **Purchase**: Complete transaction record with product and user details
+## 🗺️ Roadmap
 
-## 🔒 Security & Privacy
+- [ ] **Cloud Storage** - AWS S3/Cloudinary for images
+- [ ] **Real-time Chat** - Socket.io messaging
+- [ ] **Push Notifications** - Firebase integration  
+- [ ] **Payment Gateway** - Stripe/PayPal
+- [ ] **Reviews System** - User ratings
+- [ ] **Dark Mode** - Theme switching
+- [ ] **Admin Panel** - Web dashboard
 
-- Password storage (ready for encryption in production)
-- User data isolation
-- Input validation and sanitization
-- Secure session management
+## 🚀 Deployment
 
-## 🚧 Future Enhancements
-
-- [ ] Image upload and storage
-- [ ] Push notifications
-- [ ] In-app messaging between buyers and sellers
-- [ ] Payment gateway integration
-- [ ] User ratings and reviews
-- [ ] Advanced search filters
-- [ ] Location-based search
-- [ ] Dark mode support
-- [ ] Multi-language support
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+**Backend**: Deploy to Heroku/Railway/DigitalOcean  
+**Frontend**: Use `expo build` for app stores or `expo build:web` for web  
+**Database**: Use managed MySQL (PlanetScale, AWS RDS)
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙋‍♀️ Support
-
-For support, please create an issue in the repository or contact the development team.
-
-## 🌱 Sustainable Impact
-
-EcoFinds contributes to environmental sustainability by:
-- Extending product lifecycles
-- Reducing waste generation
-- Promoting circular economy principles
-- Encouraging conscious consumption
-- Building community awareness about sustainability
+MIT License - see LICENSE file. Free for commercial and personal use.
 
 ---
 
-**Made with 💚 for a more sustainable future**
+**EcoFinds** - Sustainable marketplace promoting circular economy 🌱  
+*Made by developers, for developers*
