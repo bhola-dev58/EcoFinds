@@ -66,6 +66,7 @@ export const AddProductScreen: React.FC<AddProductScreenProps> = ({ navigation }
         category,
         sellerId: user.id,
         imageUrl: undefined, // Placeholder for future image functionality
+        isAvailable: true,
       });
 
       if (success) {

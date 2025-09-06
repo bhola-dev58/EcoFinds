@@ -130,3 +130,27 @@ All data operations go through service layer methods that handle AsyncStorage op
 - Test on multiple platforms (iOS, Android, Web) using Expo
 - Use Expo Go for quick physical device testing
 - Web testing for rapid development and debugging
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+**Network/Fetch Errors with Expo CLI**
+```bash
+# Clear all caches and fix dependencies
+npm cache clean --force
+npx expo install --fix
+npx expo start -c
+```
+
+**Web Platform Support**
+```bash
+# Install web dependencies when needed
+npx expo install react-dom react-native-web @expo/metro-runtime
+```
+
+**Bundle/Build Errors**
+- Check for syntax errors in TypeScript files
+- Ensure all imports use correct path aliases
+- Verify React Navigation nested structure is properly closed
+- Clear Metro bundler cache with `npx expo start -c`

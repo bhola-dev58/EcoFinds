@@ -77,11 +77,13 @@ export interface AppContextType {
 export interface RootStackParamList {
   AuthStack: undefined;
   MainTabs: undefined;
+  [key: string]: undefined | object;
 }
 
 export interface AuthStackParamList {
   Login: undefined;
   Register: undefined;
+  [key: string]: undefined | object;
 }
 
 export interface MainTabsParamList {
@@ -90,11 +92,13 @@ export interface MainTabsParamList {
   AddProduct: undefined;
   Cart: undefined;
   Profile: undefined;
+  [key: string]: undefined | object;
 }
 
 export interface ProductStackParamList {
   ProductList: undefined;
   ProductDetail: { productId: string };
+  [key: string]: undefined | object;
 }
 
 export interface ProfileStackParamList {
@@ -102,4 +106,5 @@ export interface ProfileStackParamList {
   MyProducts: undefined;
   PurchaseHistory: undefined;
   EditProfile: undefined;
+  [key: string]: undefined | object;
 }
