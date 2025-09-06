@@ -162,8 +162,7 @@ const MainTabsNavigator: React.FC = () => (
         paddingBottom: 5,
         height: 60,
       },
-    })}
-    }}>
+    })}>
     <MainTabs.Screen
       name="Home"
       component={HomeScreen}
