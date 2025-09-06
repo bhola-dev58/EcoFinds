@@ -15,12 +15,13 @@ import { Product, ProductCategory } from '@/types';
 
 interface BrowseScreenProps {
   navigation: any;
+  route?: any;
 }
 
-export const BrowseScreen: React.FC<BrowseScreenProps> = ({ navigation }) => {
+export const BrowseScreen: React.FC<BrowseScreenProps> = ({ navigation, route }) => {
   const { products, addToCart } = useApp();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategory | null>(null);
+  const [searchQuery, setSearchQuery] = useState(route?.params?.initialSearchQuery || '');
+  const [selectedCategory, setSelectedCategory] = useState<ProductCategory | null>(route?.params?.selectedCategory || null);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);

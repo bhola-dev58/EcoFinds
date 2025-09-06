@@ -18,6 +18,8 @@ import { EditProfileScreen } from '@/screens/EditProfileScreen';
 import { MyProductsScreen } from '@/screens/MyProductsScreen';
 import { PurchaseHistoryScreen } from '@/screens/PurchaseHistoryScreen';
 import { ProductDetailScreen } from '@/screens/ProductDetailScreen';
+import { AboutScreen } from '@/screens/AboutScreen';
+import { ContactScreen } from '@/screens/ContactScreen';
 
 // Import types
 import { RootStackParamList, AuthStackParamList, MainTabsParamList } from '@/types';
@@ -168,14 +170,7 @@ const MainTabsNavigator: React.FC = () => (
       component={HomeScreen}
       options={{
         title: 'Home',
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: '#4CAF50',
-        },
-        headerTintColor: 'white',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
+        headerShown: false, // We'll use custom header in the HomeScreen component
       }}
     />
     <MainTabs.Screen
@@ -236,9 +231,17 @@ const RootNavigator: React.FC = () => {
       }}
     >
       {user ? (
-        <RootStack.Screen name="MainTabs" component={MainTabsNavigator} />
+        <>
+          <RootStack.Screen name="MainTabs" component={MainTabsNavigator} />
+          <RootStack.Screen name="About" component={AboutScreen} />
+          <RootStack.Screen name="Contact" component={ContactScreen} />
+        </>
       ) : (
-        <RootStack.Screen name="AuthStack" component={AuthStackNavigator} />
+        <>
+          <RootStack.Screen name="AuthStack" component={AuthStackNavigator} />
+          <RootStack.Screen name="About" component={AboutScreen} />
+          <RootStack.Screen name="Contact" component={ContactScreen} />
+        </>
       )}
     </RootStack.Navigator>
   );
