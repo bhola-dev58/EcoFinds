@@ -7,7 +7,7 @@ A complete second-hand marketplace built with React Native + Node.js + MySQL. Fe
 ```bash
 # 1. Clone and setup backend
 git clone https://github.com/bhola-dev58/EcoFinds.git
-cd EcoFinds/EcoFindsApp/backend
+cd EcoFinds/backend
 npm install && npm run init-db && npm run dev
 
 # 2. Setup frontend (new terminal)
