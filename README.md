@@ -1,4 +1,4 @@
-# EcoFinds - Full-Stack Marketplace
+# EcoFinds - Full-Stack Sustainable Second-Hand Marketplace
 
 A complete second-hand marketplace built with React Native + Node.js + MySQL. Features real-time search, JWT authentication, file uploads, and modern UI/UX.
 
@@ -147,5 +147,5 @@ MIT License - see LICENSE file. Free for commercial and personal use.
 
 ---
 
-**EcoFinds** - Sustainable marketplace promoting circular economy 🌱  
-*Made by developers, for developers*
+**EcoFinds** - Sustainable Second-Hand Marketplace promoting circular economy 🌱  
+*Made by our team*
